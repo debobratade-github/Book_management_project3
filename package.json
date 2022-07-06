@@ -3,6 +3,8 @@
     "express": "^4.18.1",
     "jason": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.4.0"
+    "mongoose": "^6.4.0",
+    "nodemon": "^2.0.19",
+    "validator": "^13.7.0"
   }
 }
