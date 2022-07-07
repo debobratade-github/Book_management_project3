@@ -2,17 +2,20 @@ const userModel = require("../models/userModel")
 
                   const jwt = require("jsonwebtoken")
 
-const checkEmail = require("email-validator")
+const checkEmail = require("email-validator");
+// const bookModel = require("../models/bookModel");
 
 
 
-const isValid = (ele)=>{
-    if(typeof ele == "string" && ele.trim().length ) return true;
-    return false;
+const isValid = function (value) {
+    if (typeof value === "undefined" || value === null) return false;
+    if (typeof value === "string" && value.trim().length === 0) return false;
+    if (typeof value === "number") return false;
+    return true;
+  };
+const isValidTitle = function (value) {
+    return ["Mr", "Mrs", "Miss"].indexOf(value) != -1
 };
-// const isValidTitle = function (value) {
-//     return ["Mr", "Mrs", "Miss"].indexOf(value) != -1
-// };
 
 //❌❌❌❌❌❌❌❌❌❌========= User Creation ========❌❌❌❌❌❌❌❌❌❌//
 
@@ -26,26 +29,42 @@ const createUser = async (req,res) =>{
         })
         
         let {title,name,phone,email,password,address} =getUsersData
-        if(!title || title==0) return res.status(400).send({status: false, msg: "🚫Title is missing Please enter title😋🚫"});    
-        // if(isValidTitle.title) { 
-        // return res.status(400).send({status: false, msg: "🚫Please Enter Valid title bitween One of them 👉 'Mr','Mrs','Miss'🚫"});  
-        // } 
-         
-        if(!isValid(name)) return res.status(400).send({
+        if(!title ) return res.status(400).send({status: false, msg: "🚫Title is missing Please enter title😋🚫"});    
+        if(!isValidTitle(title)) { 
+        return res.status(400).send({status: false, msg: "🚫Please Enter Valid title bitween One of them 👉 'Mr','Mrs','Miss'🚫"});  
+        } 
+        const regexValidator = function(val){
+            let regx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
+            return regx.test(val);
+        }
+        if(!(isValid(name) && regexValidator(name))) return res.status(400).send({
             status:false,
             msg:"🚫Plaese Enter Valid Name🚫"
         });
+
         const phoneRegex = /^[6-9]\d{9}$/gi;
+        let usedPhone = await userModel.findOne({phone:phone})
+        if(usedPhone){
+            return res.status(400).send({
+                status:false , msg: " Phone is allready Used Please  Use Another Phone"
+        })
+        }
+
         if(!(isValid(phone) && phoneRegex.test(phone))) return res.status(400).send({
             status:false,
             msg:"🚫Please Enter Valid Indian phone Number🚫"
         });
+        let usedEmail = await userModel.findOne({email:email})
+        if(usedEmail){
+            return res.status(400).send({status:false, message:"email already in use"})
+        }
+
         if(!(isValid(email) && checkEmail.validate(email))) return res.status(400).send({
             status:false,
             msg:"🚫Please Enter Valid Email🚫"
         });
 
-        const checkPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/;
+        const checkPassword = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/;
 
         if(!(isValid(password) && checkPassword.test(password))) return res.status(400).send({
             status:false,
