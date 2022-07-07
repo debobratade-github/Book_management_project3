@@ -43,9 +43,6 @@ const createBook = async function (req, res) {
         return res.status(400).send({ status: false, message: "releasing date required" });
     }
     
-    reviews ? reviews : 0;
-    isDeleted ? isDeleted : false;
-    bookData.deletedAt = isDeleted ? new Date : null;
 
     let book = await bookModel.create(bookData);
 
