@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema({
     
         title: {
             type: String, 
-            require : true,
-            enum : ['Mr', 'Mrs', 'Miss']
+            require :"title is required",
+            enum : ['Mr', 'Mrs', 'Miss'],
         },
 
 
@@ -53,8 +53,8 @@ const userSchema = new mongoose.Schema({
         },
 
 
-      timestamps: true 
+      
     
-})
+},{timestamps: true} );
 
 module.exports = mongoose.model('User', userSchema)

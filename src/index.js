@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const route = require('./routes/routes.js');
+const route = require('./route/route.js');
 const mongoose  = require('mongoose');
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json());               //only accept the http request
 
 
 
@@ -12,7 +12,7 @@ mongoose.connect("mongodb+srv://Raichu:Rishi1234@cluster0.xw5ct.mongodb.net/grou
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
-.catch ( err => console.log(err) )
+.catch ( err => console.log(err) );
 
 
 app.use('/', route);
