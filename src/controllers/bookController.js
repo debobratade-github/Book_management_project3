@@ -31,7 +31,7 @@ const createBook = async function (req, res) {
         .status(400)
         .send({ status: false, message: "book details required" });
     }
-    let { title, excerpt, userId, ISBN, category, subcategory, reviews, isDeleted, releasedAt } = bookData;
+    let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = bookData;
     let duplicateTitle = await bookModel.findOne({ title: title })
     if (duplicateTitle) return res.status(400).send({
       status: false, msg: "Title is allready Used in a book ,Please use another title"
@@ -59,7 +59,7 @@ const createBook = async function (req, res) {
     if (!(isValid(ISBN) && isbnRegex.test(ISBN))) {
       return res
         .status(400)
-        .send({ status: false, message: "ISBN no is  Required and it should be 10 or 13 digits" });
+        .send({ status: false, message: "ISBN no is  Required and it should be Valid and 10 or 13 digits" });
     }
     if (!isValid(category)) {
       return res
@@ -73,11 +73,8 @@ const createBook = async function (req, res) {
       return res.status(400).send({ status: false, message: "releasing date required" });
     }
 
-    //   reviews ? reviews : 0;
-    //   isDeleted ? isDeleted : false;
-    //   bookData.deletedAt = isDeleted ? new Date():"";
-
-    let book = await bookModel.create(bookData);
+    let finalData ={title, excerpt, userId, ISBN, category, subcategory, releasedAt}
+    let book = await bookModel.create(finalData);
 
     res.status(201).send({ status: true, message: "Success", data: book })
   } catch (err) {
@@ -248,8 +245,9 @@ const deleteBookById = async (req, res) => {
     );
     res.status(200).send({
       status: true,
-      data: deletedata,
-      msg: "Your 📖BOOK is deleted successfully🤷‍♂️"
+      msg: "Your 📖BOOK is deleted successfully🤷‍♂️",
+      data: deletedata
+     
 
     });
   }

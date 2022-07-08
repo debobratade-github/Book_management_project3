@@ -4,7 +4,7 @@ const route = require('./route/route.js');
 const mongoose  = require('mongoose');
 const app = express();
 
-app.use(bodyParser.json());               //only accept the http request
+app.use(bodyParser.json());                                           //only accept the http request
 
 
 
