@@ -25,13 +25,13 @@ const createUser = async (req,res) =>{
         let getUsersData = req.body
         if(!Object.keys(getUsersData).lenght < 0) return res.status(404).send({
             status:false,
-            msg:"🚫Please Enter Data To Create User🚫"
+            msg:"Please Enter Data To Create User"
         })
         
         let {title,name,phone,email,password,address} =getUsersData
-        if(!title ) return res.status(400).send({status: false, msg: "🚫Title is missing Please enter title😋🚫"});    
+        if(!title ) return res.status(400).send({status: false, msg: "Title is missing Please enter title"});    
         if(!isValidTitle(title)) { 
-        return res.status(400).send({status: false, msg: "🚫Please Enter Valid title bitween One of them 👉 'Mr','Mrs','Miss'🚫"});  
+        return res.status(400).send({status: false, msg: "Please Enter Valid title bitween One of them  'Mr','Mrs','Miss'"});  
         } 
         const regexValidator = function(val){
             let regx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
@@ -39,20 +39,20 @@ const createUser = async (req,res) =>{
         }
         if(!(isValid(name) && regexValidator(name))) return res.status(400).send({
             status:false,
-            msg:"🚫Plaese Enter Valid Name🚫"
+            msg:"Name is Missing or Plaese Enter Valid Name with Only alphabet"
         });
 
         const phoneRegex = /^[6-9]\d{9}$/gi;
         let usedPhone = await userModel.findOne({phone:phone})
         if(usedPhone){
             return res.status(400).send({
-                status:false , msg: " Phone is allready Used Please  Use Another Phone"
+                status:false , msg: " Phone is allready Used Please Use Another Phone"
         })
         }
 
         if(!(isValid(phone) && phoneRegex.test(phone))) return res.status(400).send({
             status:false,
-            msg:"🚫Please Enter Valid Indian phone Number🚫"
+            msg:"Phone number is missing or Please Enter Valid phone Number"
         });
         let usedEmail = await userModel.findOne({email:email})
         if(usedEmail){
@@ -61,18 +61,18 @@ const createUser = async (req,res) =>{
 
         if(!(isValid(email) && checkEmail.validate(email))) return res.status(400).send({
             status:false,
-            msg:"🚫Please Enter Valid Email🚫"
+            msg:"Email is Missing or Please Enter Valid Email"
         });
 
         const checkPassword = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/;
 
         if(!(isValid(password) && checkPassword.test(password))) return res.status(400).send({
             status:false,
-            msg:"🚫Please Enter Valid Password Minumum 8 Character and Maximum 15 🚫"
+            msg:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
         });
-        if(!(address)) return res.status(400).send({
+        if(!(address && typeof address === 'object'&& Object.keys(address).length==3)) return res.status(400).send({
             status:false,
-            msg:"🚫Please Enter Valid Address🚫"
+            msg:"Address is missing or Please Enter Valid Address"
         })
 
 
@@ -97,27 +97,27 @@ const loginUser = async (req,res)=> {
           let {email,password} = req.body
          if(!email)  return res.status(400).send({
             status:false,
-            msg:" ❌ ${email} is not Correct Please  Provide Correct Email to Login ❌"
+            msg:"  Email is not Correct Please  Provide Correct Email to Login "
          });
          if(!password) return res.status(400).send({
             status:false,
-            msg: "❌ ${password} is not Correct please provide Correct Password to Login ❌"
+            msg: " Password is not Correct please provide Correct Password to Login "
          })
 
         let  user = await userModel.findOne({email:email,password:password});
-        if(!user) return res.staus(400).send({
+        if(!user) return res.status(400).send({
             status:false,
-            msg:"❌Email or ❌Password is incorrect please enter valid email and password"
+            msg:"Email or Password is incorrect please enter valid email and password"
         });
 
         let token = jwt.sign({
             userId : user._id,
-            // exp:"Story",
-            // iat:"abcd",
-                  projrct : 3,
-                       group : "group20"
+            iat: Math.floor(Date.now() / 1000),
+                exp : Math.floor(Date.now() / 1000 + 1*60),
+
         }, `functionUp-project-3`
         ) ;
+
         res.setHeader('x-api-key' , token)
         console.log(token)
         return res.status(200).send({
