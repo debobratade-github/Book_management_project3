@@ -1,11 +1,10 @@
 const mongoose = require('mongoose')
-const validator = require('validator')
 const userSchema = new mongoose.Schema({
 
     
         title: {
             type: String, 
-            require :"title is required",
+            require :true,
             enum : ['Mr', 'Mrs', 'Miss'],
         },
 
@@ -26,9 +25,6 @@ const userSchema = new mongoose.Schema({
             type : String,
              required : true,
              unique : true,
-             validate : {
-             validator : validator.isEmail,
-            message : "Not a valid email"}
         }, 
 
 

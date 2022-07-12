@@ -2,6 +2,11 @@
 const Validator = require("../controllers/bookController");
 const reviewModel = require("../models/reviewModel");
 const bookModel = require("../models/bookModel");
+const mongoose = require("mongoose")
+
+const isValidObjectId = function (ObjectId) {
+  return mongoose.Types.ObjectId.isValid(ObjectId);
+};
 
 //❌❌❌❌❌❌❌❌❌❌=========== Create Review ==========❌❌❌❌❌❌❌❌❌❌//
 
@@ -32,21 +37,28 @@ const craeteReview = async (req, res) =>{
       });
     }
 
-    const { reviewedBy, rating, review } = requestBody;
+    let { reviewedBy, rating, review } = requestBody;
 
+    if (!review) {
+      return res
+        .status(400)
+        .send({ status: false, message: " please provide Review for this book" });
+    }
     if (!rating) {
       return res
         .status(400)
-        .send({ status: false, message: " please provide rating" });
+        .send({ status: false, message: " please provide rating for this book" });
     }
 
-    if (!(rating >= 1 || rating <= 5) && !(typeof rating == Number)) {
-      return res.status(400).send({
-        status: false,
-        message:
-          " please provide rating between 1 to 5 and type should be Number",
-      });
-    }
+    if ((rating === 1 || rating === 2 || rating === 3 || rating === 4 || rating === 5)) {
+      rating=rating
+   }else{
+    return res.status(400).send({
+      status: false,
+      message:
+        " please provide rating between 1 to 5 and type should be Number",
+    });
+   }
 
     let createReviewdata = {
       bookId: bookId,
@@ -154,7 +166,6 @@ const updateReview = async function (req, res) {
         });
       }
     }
-    console.log(10);
     if (reviewedBy) {
       if (!typeof reviewedBy == String) {
         return res.status(400).send({

@@ -49,13 +49,13 @@ const createUser = async (req,res) =>{
         let getUsersData = req.body
         if(!Object.keys(getUsersData).lenght < 0) return res.status(404).send({
             status:false,
-            msg:"Please Enter Data To Create User"
+            message:"Please Enter Data To Create User"
         })
         
         let {title,name,phone,email,password,address} =getUsersData
-        if(!title ) return res.status(400).send({status: false, msg: "Title is missing Please enter title"});    
+        if(!title ) return res.status(400).send({status: false, message: "Title is missing Please enter title"});    
         if(!isValidTitle(title)) { 
-        return res.status(400).send({status: false, msg: "Please Enter Valid title bitween One of them  'Mr','Mrs','Miss'"});  
+        return res.status(400).send({status: false, message: "Please Enter Valid title bitween One of them  'Mr','Mrs','Miss'"});  
         } 
         const regexValidator = function(val){
             let regx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
@@ -63,20 +63,20 @@ const createUser = async (req,res) =>{
         }
         if(!(isValid(name) && regexValidator(name))) return res.status(400).send({
             status:false,
-            msg:"Name is Missing or Plaese Enter Valid Name with Only alphabet"
+            message:"Name is Missing or Plaese Enter Valid Name with Only alphabet"
         });
 
         const phoneRegex = /^[6-9]\d{9}$/gi;
         let usedPhone = await userModel.findOne({phone:phone})
         if(usedPhone){
             return res.status(400).send({
-                status:false , msg: " Phone is allready Used Please Use Another Phone"
+                status:false , message: " Phone is allready Used Please Use Another Phone"
         })
         }
 
         if(!(isValid(phone) && phoneRegex.test(phone))) return res.status(400).send({
             status:false,
-            msg:"Phone number is missing or Please Enter Valid phone Number"
+            message:"Phone number is missing or Please Enter Valid phone Number"
         });
         let usedEmail = await userModel.findOne({email:email})
         if(usedEmail){
@@ -85,14 +85,14 @@ const createUser = async (req,res) =>{
 
         if(!(isValid(email) && checkEmail.validate(email))) return res.status(400).send({
             status:false,
-            msg:"Email is Missing or Please Enter Valid Email"
+            message:"Email is Missing or Please Enter Valid Email"
         });
 
         const checkPassword = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/;
 
         if(!(isValid(password) && checkPassword.test(password))) return res.status(400).send({
             status:false,
-            msg:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
+            message:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
         });
         if (!/^([a-zA-Z0-9 ]{2,50})*$/
         .test(address.street)) {
@@ -114,7 +114,7 @@ const createUser = async (req,res) =>{
 
         if(!(address && typeof address === 'object'&& Object.keys(address).length==3)) return res.status(400).send({
             status:false,
-            msg:"Address is missing or Please Enter Valid Address"
+            message:"Address is missing or Please Enter Valid Address"
         });
 
 
@@ -126,7 +126,7 @@ const createUser = async (req,res) =>{
     } 
     catch (error) {
         console.log(error)
-        return res.status(500).send({status:false, msg:error.message})
+        return res.status(500).send({status:false, message:error.message})
         
     }
 };
@@ -139,22 +139,22 @@ const loginUser = async (req,res)=> {
           let {email,password} = req.body
          if(!email)  return res.status(400).send({
             status:false,
-            msg:"  Email is not Correct Please  Provide Correct Email to Login "
+            message:"  Email is Required "
          });
          if(!password) return res.status(400).send({
             status:false,
-            msg: " Password is not Correct please provide Correct Password to Login "
+            message: " Password is Required "
          })
 
         let  user = await userModel.findOne({email:email,password:password});
         if(!user) return res.status(400).send({
             status:false,
-            msg:"Email or Password is incorrect please enter valid email and password"
+            message:" Valid Email and Password is Required "
         });
 
         let token = jwt.sign({
-            userId : user._id,
-            // iat: Math.floor(Date.now() / 1000),
+            userId : user._id.toString(),
+            iat: Math.floor(Date.now() / 1000),
                 exp : Math.floor(Date.now() / 1000 + 10*60*60),
 
         }, `functionUp-project-3`
@@ -164,12 +164,12 @@ const loginUser = async (req,res)=> {
         console.log(token)
         return res.status(200).send({
             status:true, data: token,
-            msg:"✔️🙂User Loggedin Successfully✔️🙂"
+            message:"✔️🙂User Loggedin Successfully✔️🙂"
         });
 
     } catch (error) {
         console.log(error)
-        return res.status(500).send({status:false, msg:error.message})
+        return res.status(500).send({status:false, message:error.message})
     }
 };
 

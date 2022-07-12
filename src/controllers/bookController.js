@@ -21,6 +21,7 @@ const isValidObjectId = function (ObjectId) {
 
 const createBook = async function (req, res) {
   try {
+    let userID= req.userId
     const bookData = req.body;
     if (!isValidBody(bookData)) {
       return res
@@ -29,6 +30,9 @@ const createBook = async function (req, res) {
     }
     let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
       bookData;
+      if(userId != userID){
+        return res.status(403).send({status:false,message:"User not Authorised, उपयोगकर्ता इस कार्रवाई के लिए अधिकृत नहीं है, कितने तेजस्वी लोग हैं आप  पहली फुर्सत में निकल।"})
+      }
     let duplicateTitle = await bookModel.findOne({ title: title });
     if (duplicateTitle)
       return res.status(400).send({
@@ -221,11 +225,6 @@ const updateBookById = async function (req, res) {
     }
 
     checkBookId = await bookModel.findOne({ _id: BookId, isDeleted: false });
-    if (req.decodedToken.userId != checkBookId.userId) {
-      return res
-        .status(400)
-        .send({ status: false, message: "not authorized to update" });
-    }
     if (!checkBookId) {
       return res.status(404).send({ status: false, message: "no book found" });
     }
@@ -254,6 +253,11 @@ const updateBookById = async function (req, res) {
         return res
           .status(400)
           .send({ status: false, message: "Title is not valid" });
+      }
+      if(!title){
+        return res
+        .status(400)
+        .send({ status: false, message: "Title is not valid   22" });
       }
       bookData.title = title;
     }
@@ -308,7 +312,7 @@ const deleteBookById = async function (req, res) {
               book.save()
               res.status(200).send({status:true, massage: "Your BOOK is deleted successfully",})
           } else{
-              res.status(404).send({massage : "already deleted"})
+              res.status(404).send({massage : "The book already deleted"})
           }
       }
   }
@@ -330,74 +334,3 @@ module.exports = {
   isValidBody,
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const deleteBookById = async (req, res) => {
-//   try {
-//     let bookId = req.params.bookId;
-//     if (!isValidObjectId(bookId.toString())) {
-//       return res
-//         .status(400)
-//         .send({ status: false, message: "bookId not valid" });
-//     }
-//     let findData = await bookModel.findById(bookId);
-//     if (findData.isDeleted)
-//       return res.status(400).send({
-//         status: false,
-//         message: " ❗ Oops  This Book is Allready Deleted",
-//       });
-//     let deletedata = await bookModel.findOneAndUpdate(
-//       { _id: bookId }, // find
-//       { $set: { isDeleted: true, deletedAt: new Date() } }, //condition
-//       { new: true } // new data
-//     );
-//     res.status(200).send({
-//       status: true,
-//       message: "Your 📖BOOK is deleted successfully🤷‍♂️",
-//     });
-//   } catch (err) {
-//     return res.status(500).send({ status: false, message: err.message });
-//   }
-// };

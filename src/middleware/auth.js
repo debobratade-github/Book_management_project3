@@ -26,17 +26,17 @@ const authentication = function(req, res, next){
         if(!token){
             return res.status(401).send({status: false, message: "token not present"})
         }
-        let decodedToken = jwt.verify(token, "functionUp-project-3", { ignoreExpiration: true, }, function (err, decoded) {
+        let decodedToken = jwt.verify(token, "functionUp-project-3", 
+        { ignoreExpiration: true, }, function (err, decoded) {      //give a
             if (err) { return res.status(400).send({ status: false, meessage: "token invalid" }) }
             else {
-              if (Date.now() > decoded.exp * 1000) {
-                return res.status(401).send({ status: false, msg: "Session Expired", });
+              if (Date.now() > decoded.exp * 1000*60) {
+                return res.status(401).send({ status: false, message: "Session Expired", });
               }
-              req.decodedToken = decodedToken
-            //   req.userId = decoded.userId;
-            //   next();
+              req.userId = decoded.userId;
             }
-          });
+            });
+          req.decodedToken = decodedToken
         next();
     }
 
@@ -48,58 +48,29 @@ const authentication = function(req, res, next){
 
 //❌❌❌❌❌❌❌❌❌❌=========== Authorisation ==========❌❌❌❌❌❌❌❌❌❌//
 
-// const authorization = async (req,res,next) => {
-//     try {
-//         let decodedToken = req.decodedToken
-//         let bookId = req.params.bookId;
-//         let book = await bookModel.findById(bookId)
-//          if(!book) return res.status(404).send({
-//             status:false,
-//             message: "  The BOOK You entered does not exist in database  "
-//          })
-
-//          user = book.userId.toString();
-
-//          if(user != decodedToken.userId){
-//             return res.status(403).send({
-//                 status:false,
-//                 message:" Opps  You are not Athorised for this action  SORRY  "
-//             })
-//          }
-//          next();
-
-//     }
-//     catch (error) {
-//         console.log(error)
-//         return res.status(500).send({status:false, message:error.message})
-//     }
-// };
-
-
 
 
 const authorization = async function(req , res , next){
     try{
         
-        let decodedToken = req.decodedToken
-        let bookId = req.params.bookId
+        let decodedToken = req.userId
+         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) {
                   return res
                     .status(400)
                     .send({ status: false, message: "bookId not valid" });
                 }
         let book = await bookModel.findById(bookId)
-        if(!book) return res.status(404).send({status : false , msg: "book is not present"})
-        
-        if(book.userId != decodedToken.userId) {  
-        return res.status(403).send({status: false , msg:"Unauthorized user"})}
+        if(!book) return res.status(404).send({status : false , message: "book is not present"})
+        if(book.userId != decodedToken) {  
+        return res.status(403).send({status: false , message:"Unauthorized user"})}
         else{
             req.book = book
             next()
         }
     }
     catch(err){
-        res.status(500).send({status:false , msg: err.message})
+        res.status(500).send({status:false , message: err.message})
     }
 }
 
