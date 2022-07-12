@@ -1,3 +1,27 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const userModel = require("../models/userModel")
 
                   const jwt = require("jsonwebtoken")
@@ -70,10 +94,28 @@ const createUser = async (req,res) =>{
             status:false,
             msg:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
         });
+        if (!/^([a-zA-Z0-9 ]{2,50})*$/
+        .test(address.street)) {
+            return res.status(400).send({
+              status: false,
+              message: "Street should be Valid and Its alphabetic and Number",
+            });
+          }
+        let cityRegex = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
+        if (!cityRegex.test(address.city)) {
+            return res.status(400).send({status:false, message:"city name should be valid. contain only alphabets"})
+        }
+        if (!/^\d{6}$/.test(address.pincode)) {
+            return res.status(400).send({
+              status: false,
+              message: "Pincode should have only 6 digits. No alphabets",
+            });
+          }
+
         if(!(address && typeof address === 'object'&& Object.keys(address).length==3)) return res.status(400).send({
             status:false,
             msg:"Address is missing or Please Enter Valid Address"
-        })
+        });
 
 
         let savedData = await userModel.create(getUsersData);
@@ -112,8 +154,8 @@ const loginUser = async (req,res)=> {
 
         let token = jwt.sign({
             userId : user._id,
-            iat: Math.floor(Date.now() / 1000),
-                exp : Math.floor(Date.now() / 1000 + 1*60),
+            // iat: Math.floor(Date.now() / 1000),
+                exp : Math.floor(Date.now() / 1000 + 10*60*60),
 
         }, `functionUp-project-3`
         ) ;
@@ -130,6 +172,5 @@ const loginUser = async (req,res)=> {
         return res.status(500).send({status:false, msg:error.message})
     }
 };
-
 
 module.exports = {createUser,loginUser}

@@ -3,13 +3,9 @@ const Validator = require("../controllers/bookController");
 const reviewModel = require("../models/reviewModel");
 const bookModel = require("../models/bookModel");
 
-const mongoose = require("mongoose");
-const isValidObjectId = function (value) {
-  return mongoose.Types.ObjectId.isValid(value);
-};
+//❌❌❌❌❌❌❌❌❌❌=========== Create Review ==========❌❌❌❌❌❌❌❌❌❌//
 
-// Create review
-const craeteReview = async function (req, res) {
+const craeteReview = async (req, res) =>{
   try {
     let bookId = req.params.bookId;
     let requestBody = req.body;
@@ -76,6 +72,8 @@ const craeteReview = async function (req, res) {
   }
 };
 
+//❌❌❌❌❌❌❌❌❌❌===========Review  update==========❌❌❌❌❌❌❌❌❌❌//
+
 const updateReview = async function (req, res) {
   try {
     let bookId = req.params.bookId;
@@ -94,25 +92,25 @@ const updateReview = async function (req, res) {
     if (!reviewId)
       return res
         .status(400)
-        .send({ status: false, message: "BookId is required" });
+        .send({ status: false, message: "ReviewId is required" });
     if (!Validator.isValidObjectId(reviewId)) {
       return res
         .status(400)
-        .send({ status: false, message: "Invalid book id" });
+        .send({ status: false, message: "Invalid Review id" });
     }
 
-    let deletedBook = await bookModel.findOne({ _id: bookId, isDeleted: true });
-    if (deletedBook) {
+    let checkDeletedBook = await bookModel.findOne({ _id: bookId, isDeleted: true });
+    if (checkDeletedBook) {
       return res
         .status(400)
         .send({ status: false, msg: "Book has already been deleted." });
     }
 
-    let reviewById = await reviewModel.findOne({
+    let checkReviewDeleted = await reviewModel.findOne({
       _id: reviewId,
       isDeleted: true,
     });
-    if (reviewById) {
+    if (checkReviewDeleted) {
       return res
         .status(400)
         .send({ status: false, msg: "Review has already been deleted." });
@@ -184,6 +182,8 @@ const updateReview = async function (req, res) {
   }
 };
 
+//❌❌❌❌❌❌❌❌❌❌===========Review  Delete ==========❌❌❌❌❌❌❌❌❌❌//
+
 const deleteReview = async function (req, res) {
   try {
     bookId = req.params.bookId;
@@ -235,7 +235,7 @@ const deleteReview = async function (req, res) {
     res.status(200).send({
       status: true,
       message: "review deleted",
-      data: updateReviewStatus,
+      data: updateReviewStatus,updateReviewCount
     });
   } catch (err) {
     res.status(500).send({ status: false, message: err.message });
