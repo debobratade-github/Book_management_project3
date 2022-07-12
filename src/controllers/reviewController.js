@@ -90,6 +90,21 @@ const updateReview = async function (req, res) {
   try {
     let bookId = req.params.bookId;
     let reviewId = req.params.reviewId;
+    let requestBody = req.body;
+    if (!Validator.isValidBody(requestBody)) {
+      return res.status(400).send({
+        status: false,
+        message: "There is no data is input for updating",
+      });
+    }
+
+    let key= Object.keys (requestBody)
+    
+    for(let i=0; i<key.length; i++){
+       if(requestBody[key[i]].length==0)
+      return res.status(400).send({status: false, message: "Enter valid inforamtion "})
+    }
+
     // params
     if (!bookId)
       return res
@@ -137,14 +152,8 @@ const updateReview = async function (req, res) {
       });
     }
     // body
-    let requestBody = req.body;
-    if (!Validator.isValidBody(requestBody)) {
-      return res.status(400).send({
-        status: false,
-        message: "There is no data is input for updating",
-      });
-    }
-
+    
+    requestBody = JSON.parse(JSON.stringify(requestBody).replace(/"\s+|\s+"/g,'"'))
     let { review, rating, reviewedBy } = requestBody;
     if (review) {
       if (!typeof review == String)

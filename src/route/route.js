@@ -15,7 +15,7 @@ let {craeteReview,updateReview,deleteReview} = reviewController
 
 router.post("/register",createUser)
 router.post("/login",loginUser)
-router.post("/books",authentication,createBook)
+router.post("/books",authentication,authorization,createBook)
 router.get("/books",authentication,getBooks)
 router.get("/books/:bookId",authentication,getBookDetailsById)
 router.put("/books/:bookId",authentication,authorization,updateBookById)

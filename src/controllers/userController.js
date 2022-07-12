@@ -1,6 +1,6 @@
 const userModel = require("../models/userModel")
 
-                  const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 
 const checkEmail = require("email-validator");
 // const bookModel = require("../models/bookModel");
@@ -23,11 +23,11 @@ const createUser = async (req,res) =>{
 
     try {
         let getUsersData = req.body
-        if(!Object.keys(getUsersData).lenght < 0) return res.status(404).send({
+        if(!Object.keys(getUsersData).length > 0) return res.status(404).send({
             status:false,
             message:"Please Enter Data To Create User"
         })
-        
+        getUsersData = JSON.parse(JSON.stringify(getUsersData).replace(/"\s+|\s+"/g,'"'))
         let {title,name,phone,email,password,address} =getUsersData
         if(!title ) return res.status(400).send({status: false, message: "Title is missing Please enter title"});    
         if(!isValidTitle(title)) { 
@@ -37,9 +37,13 @@ const createUser = async (req,res) =>{
             let regx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
             return regx.test(val);
         }
-        if(!(isValid(name) && regexValidator(name))) return res.status(400).send({
+        if(!(isValid(name))) return res.status(400).send({
             status:false,
-            message:"Name is Missing or Plaese Enter Valid Name with Only alphabet"
+            message:"Name is Missing"
+        });
+        if(!(regexValidator(name))) return res.status(400).send({
+            status:false,
+            message:"Plaese Enter Valid Name with Only alphabet"
         });
 
         const phoneRegex = /^[6-9]\d{9}$/gi;
@@ -50,26 +54,49 @@ const createUser = async (req,res) =>{
         })
         }
 
-        if(!(isValid(phone) && phoneRegex.test(phone))) return res.status(400).send({
+        if(!(isValid(phone))) return res.status(400).send({
             status:false,
-            message:"Phone number is missing or Please Enter Valid phone Number"
+            message:"Phone number is missing "
         });
+        if(!(phoneRegex.test(phone))) return res.status(400).send({
+            status:false,
+            message:"Please Enter Valid phone Number"
+        });
+
+
         let usedEmail = await userModel.findOne({email:email})
         if(usedEmail){
             return res.status(400).send({status:false, message:"email already in use"})
         }
 
-        if(!(isValid(email) && checkEmail.validate(email))) return res.status(400).send({
+        if(!(isValid(email))) return res.status(400).send({
             status:false,
-            message:"Email is Missing or Please Enter Valid Email"
+            message:"Email is Missing "
+        });
+        if(!(checkEmail.validate(email))) return res.status(400).send({
+            status:false,
+            message:" Please Enter Valid Email"
         });
 
         const checkPassword = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/;
 
-        if(!(isValid(password) && checkPassword.test(password))) return res.status(400).send({
+        if(!(isValid(password))) return res.status(400).send({
             status:false,
             message:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
         });
+        if(!(checkPassword.test(password))) return res.status(400).send({
+            status:false,
+            message:"Password is missing or Please Enter Valid Password Minumum 8 Character and Maximum 15 "
+        });
+
+        if(address){
+            let key= Object.keys (address)
+    
+    for(let i=0; i<key.length; i++){
+       if(address[key[i]].length==0)
+      return res.status(400).send({status: false, message: "Enter valid inforamtion in address "})
+    }
+
         if (!/^([a-zA-Z0-9 ]{2,50})*$/
         .test(address.street)) {
             return res.status(400).send({
@@ -90,9 +117,9 @@ const createUser = async (req,res) =>{
 
         if(!(address && typeof address === 'object'&& Object.keys(address).length==3)) return res.status(400).send({
             status:false,
-            message:"Address is missing or Please Enter Valid Address"
+            message:"Sub field is missing in address"
         });
-
+    }
 
         let savedData = await userModel.create(getUsersData);
         res.status(201).send({
@@ -140,7 +167,7 @@ const loginUser = async (req,res)=> {
         console.log(token)
         return res.status(200).send({
             status:true, data: token,
-            message:"✔️🙂User Loggedin Successfully✔️🙂"
+            message:"User Loggedin Successfully"
         });
 
     } catch (error) {
