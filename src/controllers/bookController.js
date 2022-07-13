@@ -136,7 +136,7 @@ const getBooks = async function (req, res) {
         return res.status(404).send({ status: "false", message: "No book found" });
       return res
         .status(200)
-        .send({ status: "true", message: "Books list", data: allBook });
+        .send({ status: true, message: "Books list", data: allBook });
     } else {
       let Book = await bookModel
         .find({ $and: [{ isDeleted: "false" }], $and: [query] })
@@ -153,7 +153,7 @@ const getBooks = async function (req, res) {
         return res.status(404).send({ status: "false", message: "No book found" });
       res
         .status(200)
-        .send({ status: "true", message: "Books list", data: Book });
+        .send({ status: true, message: "Books list", data: Book });
     }
   } catch (error) {
     console.log("This is the error :", error.message);
@@ -306,14 +306,14 @@ const deleteBookById = async function (req, res) {
           if (book.isDeleted == false) {
               book.isDeleted = true
               book.save()
-              res.status(200).send({status:true, massage: "Your BOOK is deleted successfully",})
+              res.status(200).send({status:true, message: "Your BOOK is deleted successfully",})
           } else{
-              res.status(404).send({massage : "The book already deleted"})
+              res.status(404).send({message : "The book already deleted"})
           }
       }
   }
   catch(err){
-      res.status(500).send({massage : err.message})
+      res.status(500).send({message : err.message})
   }
   
 }

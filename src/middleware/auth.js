@@ -27,7 +27,7 @@ const authentication = function(req, res, next){
             return res.status(401).send({status: false, message: "token not present"})
         }
         let decodedToken = jwt.verify(token, "functionUp-project-3", 
-        { ignoreExpiration: true, }, function (err, decoded) {      //give a
+        { ignoreExpiration: true, }, function (err, decoded) {   
             if (err) { return res.status(400).send({ status: false, meessage: "token invalid" }) }
             else {
               if (Date.now() > decoded.exp * 1000*60) {
@@ -70,7 +70,7 @@ const authorization = async function(req , res , next){
         }
     }
     catch(err){
-        res.status(500).send({status:false , message: err.message})
+      return res.status(500).send({status:false , message: err.message})
     }
 }
 

@@ -78,9 +78,9 @@ const craeteReview = async (req, res) =>{
       .find(reviewdata)
       .select({ isDeleted: 0, updatedAt: 0, createdAt: 0, __v: 0 });
 
-    res.status(201).send({ status: true, data: newdata });
+    res.status(201).send({ status: true, message:"Done", data: newdata });
   } catch (error) {
-    res.status(500).send({ status: false, msg: error.message });
+    res.status(500).send({ status: false, message: error.message });
   }
 };
 
@@ -130,7 +130,7 @@ const updateReview = async function (req, res) {
     if (checkDeletedBook) {
       return res
         .status(400)
-        .send({ status: false, msg: "Book has already been deleted." });
+        .send({ status: false, message: "Book has already been deleted." });
     }
 
     let checkReviewDeleted = await reviewModel.findOne({
@@ -140,7 +140,7 @@ const updateReview = async function (req, res) {
     if (checkReviewDeleted) {
       return res
         .status(400)
-        .send({ status: false, msg: "Review has already been deleted." });
+        .send({ status: false, message: "Review has already been deleted." });
     }
 
     let isReviewId = await reviewModel.findById({ _id: reviewId });
@@ -148,7 +148,7 @@ const updateReview = async function (req, res) {
     if (bookId != isReviewId.bookId) {
       return res.status(400).send({
         status: false,
-        msg: "This review not belongs to this particular book.",
+        message: "This review not belongs to this particular book.",
       });
     }
     // body
