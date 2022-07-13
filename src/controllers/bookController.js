@@ -31,7 +31,7 @@ const createBook = async function (req, res) {
     let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
       bookData;
       if(userId != userID){
-        return res.status(403).send({status:false,message:"User not Authorised, उपयोगकर्ता इस कार्रवाई के लिए अधिकृत नहीं है, कितने तेजस्वी लोग हैं आप  पहली फुर्सत में निकल।"})
+        return res.status(403).send({status:false,message:"User not Authorised"})
       }
     let duplicateTitle = await bookModel.findOne({ title: title });
     if (duplicateTitle)
