@@ -1,3 +1,6 @@
+# Video Explanation of the solution code:
+https://drive.google.com/drive/folders/1vjDdzK2npDQRWZWIIrKVE-BM7z2lmUa9?usp=sharing
+
 # Book_management_project3
 
 # Radon
